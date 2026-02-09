@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tính Chỉ Số BMI - Body Mass Index</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@400;500;600&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        :root {
+            --primary: #6B9080;
+            --secondary: #F4A259;
+            --accent: #EAE7DC;
+            --text: #2C3531;
+            --text-light: #5F6F65;
+            --bg-main: #FAF9F6;
+            --white: #FFFFFF;
+            --shadow: rgba(107, 144, 128, 0.15);
+        }
+        
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: var(--bg-main);
+            color: var(--text);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+        
+        .decorative-bg {
+            position: fixed;
+            top: -50%;
+            right: -20%;
+            width: 800px;
+            height: 800px;
+            background: radial-gradient(circle, rgba(107, 144, 128, 0.08) 0%, transparent 70%);
+            border-radius: 50%;
+            pointer-events: none;
+            animation: float 20s ease-in-out infinite;
+        }
+        
+        .decorative-bg-2 {
+            position: fixed;
+            bottom: -30%;
+            left: -10%;
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(244, 162, 89, 0.06) 0%, transparent 70%);
+            border-radius: 50%;
+            pointer-events: none;
+            animation: float 25s ease-in-out infinite reverse;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0) rotate(0deg); }
+            25% { transform: translate(20px, 30px) rotate(5deg); }
+            50% { transform: translate(-10px, 60px) rotate(-5deg); }
+            75% { transform: translate(30px, 20px) rotate(3deg); }
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 60px 24px;
+            position: relative;
+            z-index: 1;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 60px;
+            animation: fadeInDown 0.8s ease-out;
+        }
+        
+        h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(2.5rem, 5vw, 4rem);
+            font-weight: 700;
+            color: var(--text);
+            margin-bottom: 16px;
+            letter-spacing: -1px;
+        }
+        
+        .subtitle {
+            font-size: 1.125rem;
+            color: var(--text-light);
+            font-weight: 400;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1.2fr;
+            gap: 48px;
+            align-items: start;
+            animation: fadeIn 1s ease-out 0.2s backwards;
+        }
+        
+        @media (max-width: 968px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .calculator-card {
+            background: var(--white);
+            border-radius: 32px;
+            padding: 48px;
+            box-shadow: 0 20px 60px var(--shadow);
+            position: relative;
+            overflow: hidden;
+            animation: slideInLeft 0.8s ease-out 0.4s backwards;
+        }
+        
+        .calculator-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 6px;
+            background: linear-gradient(90deg, var(--primary) 0%, var(--secondary) 100%);
+        }
+        
+        .form-group {
+            margin-bottom: 32px;
+        }
+        
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: var(--text);
+            font-size: 0.95rem;
+            letter-spacing: 0.3px;
+            text-transform: uppercase;
+        }
+        
+        .input-wrapper {
+            position: relative;
+        }
+        
+        input[type="number"] {
+            width: 100%;
+            padding: 18px 24px;
+            padding-right: 80px;
+            border: 2px solid var(--accent);
+            border-radius: 16px;
+            font-size: 1.125rem;
+            font-family: 'DM Sans', sans-serif;
+            transition: all 0.3s ease;
+            background: var(--bg-main);
+        }
+        
+        input[type="number"]:focus {
+            outline: none;
+            border-color: var(--primary);
+            background: var(--white);
+            box-shadow: 0 4px 20px rgba(107, 144, 128, 0.1);
+        }
+        
+        .unit {
+            position: absolute;
+            right: 24px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-light);
+            font-weight: 500;
+            font-size: 0.95rem;
+        }
+        
+        .radio-group {
+            display: flex;
+            gap: 16px;
+            margin-top: 12px;
+        }
+        
+        .radio-option {
+            flex: 1;
+        }
+        
+        .radio-option input[type="radio"] {
+            display: none;
+        }
+        
+        .radio-option label {
+            display: block;
+            padding: 16px;
+            border: 2px solid var(--accent);
+            border-radius: 12px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 0;
+            text-transform: none;
+            font-weight: 500;
+        }
+        
+        .radio-option input[type="radio"]:checked + label {
+            background: var(--primary);
+            border-color: var(--primary);
+            color: var(--white);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(107, 144, 128, 0.3);
+        }
+        
+        button {
+            width: 100%;
+            padding: 20px;
+            background: linear-gradient(135deg, var(--primary) 0%, #5A7C6F 100%);
+            color: var(--white);
+            border: none;
+            border-radius: 16px;
+            font-size: 1.125rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'DM Sans', sans-serif;
+            letter-spacing: 0.5px;
+            box-shadow: 0 8px 24px rgba(107, 144, 128, 0.3);
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 32px rgba(107, 144, 128, 0.4);
+        }
+        
+        button:active {
+            transform: translateY(0);
+        }
+        
+        .result-card {
+            background: var(--white);
+            border-radius: 32px;
+            padding: 48px;
+            box-shadow: 0 20px 60px var(--shadow);
+            min-height: 400px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            animation: slideInRight 0.8s ease-out 0.5s backwards;
+        }
+        
+        .result-placeholder {
+            color: var(--text-light);
+            font-size: 1.125rem;
+        }
+        
+        .result-placeholder svg {
+            width: 120px;
+            height: 120px;
+            margin-bottom: 24px;
+            opacity: 0.3;
+        }
+        
+        .result-content {
+            display: none;
+            width: 100%;
+        }
+        
+        .result-content.show {
+            display: block;
+            animation: scaleIn 0.5s ease-out;
+        }
+        
+        .bmi-value {
+            font-family: 'Playfair Display', serif;
+            font-size: 5rem;
+            font-weight: 700;
+            margin-bottom: 16px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .bmi-category {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 24px;
+            padding: 12px 32px;
+            border-radius: 50px;
+            display: inline-block;
+        }
+        
+        .bmi-description {
+            color: var(--text-light);
+            font-size: 1rem;
+            line-height: 1.8;
+            margin-top: 24px;
+            padding: 24px;
+            background: var(--bg-main);
+            border-radius: 16px;
+            border-left: 4px solid var(--primary);
+        }
+        
+        .category-underweight {
+            background: #E3F2FD;
+            color: #1976D2;
+        }
+        
+        .category-normal {
+            background: #E8F5E9;
+            color: #388E3C;
+        }
+        
+        .category-overweight {
+            background: #FFF3E0;
+            color: #F57C00;
+        }
+        
+        .category-obese {
+            background: #FFEBEE;
+            color: #D32F2F;
+        }
+        
+        .info-section {
+            margin-top: 60px;
+            padding: 48px;
+            background: var(--white);
+            border-radius: 32px;
+            box-shadow: 0 20px 60px var(--shadow);
+            animation: fadeIn 1s ease-out 0.8s backwards;
+        }
+        
+        .info-section h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2rem;
+            margin-bottom: 24px;
+            color: var(--text);
+        }
+        
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 24px;
+            margin-top: 32px;
+        }
+        
+        .info-item {
+            padding: 24px;
+            background: var(--bg-main);
+            border-radius: 16px;
+            border-left: 4px solid var(--primary);
+            transition: transform 0.3s ease;
+        }
+        
+        .info-item:hover {
+            transform: translateX(8px);
+        }
+        
+        .info-item h3 {
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--text);
+            font-size: 1.125rem;
+        }
+        
+        .info-item p {
+            color: var(--text-light);
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+        
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        @keyframes slideInLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        
+        @keyframes scaleIn {
+            from {
+                opacity: 0;
+                transform: scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="decorative-bg"></div>
+    <div class="decorative-bg-2"></div>
+    
+    <div class="container">
+        <header>
+            <h1>Tính Chỉ Số BMI</h1>
+            <p class="subtitle">Đo lường chỉ số khối cơ thể của bạn để đánh giá tình trạng sức khỏe</p>
+        </header>
+        
+        <div class="main-content">
+            <div class="calculator-card">
+                <form id="bmiForm">
+                    <div class="form-group">
+                        <label for="height">Chiều cao</label>
+                        <div class="input-wrapper">
+                            <input type="number" id="height" placeholder="170" min="1" step="0.1" required>
+                            <span class="unit">cm</span>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="weight">Cân nặng</label>
+                        <div class="input-wrapper">
+                            <input type="number" id="weight" placeholder="65" min="1" step="0.1" required>
+                            <span class="unit">kg</span>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Giới tính</label>
+                        <div class="radio-group">
+                            <div class="radio-option">
+                                <input type="radio" id="male" name="gender" value="male" checked>
+                                <label for="male">Nam</label>
+                            </div>
+                            <div class="radio-option">
+                                <input type="radio" id="female" name="gender" value="female">
+                                <label for="female">Nữ</label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <button type="submit">Tính BMI</button>
+                </form>
+            </div>
+            
+            <div class="result-card">
+                <div class="result-placeholder" id="placeholder">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                    <p>Nhập thông tin của bạn<br>để xem kết quả BMI</p>
+                </div>
+                
+                <div class="result-content" id="resultContent">
+                    <div class="bmi-value" id="bmiValue">0</div>
+                    <div class="bmi-category" id="bmiCategory"></div>
+                    <div class="bmi-description" id="bmiDescription"></div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="info-section">
+            <h2>Hiểu về chỉ số BMI</h2>
+            <p style="color: var(--text-light); margin-bottom: 24px;">
+                Chỉ số khối cơ thể (BMI) là một chỉ số đo lường mức độ mỡ trong cơ thể dựa trên chiều cao và cân nặng. 
+                Đây là công cụ sàng lọc hữu ích để đánh giá nguy cơ sức khỏe liên quan đến cân nặng.
+            </p>
+            
+            <div class="info-grid">
+                <div class="info-item">
+                    <h3>Gầy - Dưới 18.5</h3>
+                    <p>Cân nặng thấp hơn mức bình thường. Nên tăng cân để đạt sức khỏe tối ưu.</p>
+                </div>
+                <div class="info-item">
+                    <h3>Bình thường - 18.5-24.9</h3>
+                    <p>Cân nặng khỏe mạnh, lý tưởng. Duy trì lối sống và chế độ ăn cân bằng.</p>
+                </div>
+                <div class="info-item">
+                    <h3>Thừa cân - 25-29.9</h3>
+                    <p>Cân nặng cao hơn mức bình thường. Nên kiểm soát cân nặng và tập luyện.</p>
+                </div>
+                <div class="info-item">
+                    <h3>Béo phì - Trên 30</h3>
+                    <p>Cân nặng cao đáng kể. Nên tư vấn chuyên gia để có kế hoạch giảm cân.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        const form = document.getElementById('bmiForm');
+        const placeholder = document.getElementById('placeholder');
+        const resultContent = document.getElementById('resultContent');
+        const bmiValue = document.getElementById('bmiValue');
+        const bmiCategory = document.getElementById('bmiCategory');
+        const bmiDescription = document.getElementById('bmiDescription');
+        
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const height = parseFloat(document.getElementById('height').value) / 100; // convert to meters
+            const weight = parseFloat(document.getElementById('weight').value);
+            
+            if (height > 0 && weight > 0) {
+                const bmi = (weight / (height * height)).toFixed(1);
+                
+                let category, categoryClass, description;
+                
+                if (bmi < 18.5) {
+                    category = 'Gầy';
+                    categoryClass = 'category-underweight';
+                    description = 'Chỉ số BMI của bạn thấp hơn mức bình thường. Bạn nên tăng cân để đạt được sức khỏe tối ưu. Hãy tham khảo ý kiến bác sĩ hoặc chuyên gia dinh dưỡng để có chế độ ăn uống phù hợp.';
+                } else if (bmi >= 18.5 && bmi < 25) {
+                    category = 'Bình thường';
+                    categoryClass = 'category-normal';
+                    description = 'Chúc mừng! Chỉ số BMI của bạn nằm trong phạm vi khỏe mạnh. Hãy duy trì lối sống lành mạnh với chế độ ăn cân bằng và tập thể dục đều đặn.';
+                } else if (bmi >= 25 && bmi < 30) {
+                    category = 'Thừa cân';
+                    categoryClass = 'category-overweight';
+                    description = 'Chỉ số BMI của bạn cao hơn mức bình thường. Bạn nên kiểm soát cân nặng thông qua chế độ ăn uống lành mạnh và tăng cường hoạt động thể chất. Tham khảo ý kiến chuyên gia nếu cần.';
+                } else {
+                    category = 'Béo phì';
+                    categoryClass = 'category-obese';
+                    description = 'Chỉ số BMI của bạn ở mức cao. Điều này có thể ảnh hưởng đến sức khỏe của bạn. Hãy tham khảo ý kiến bác sĩ hoặc chuyên gia dinh dưỡng để có kế hoạch giảm cân an toàn và hiệu quả.';
+                }
+                
+                bmiValue.textContent = bmi;
+                bmiCategory.textContent = category;
+                bmiCategory.className = 'bmi-category ' + categoryClass;
+                bmiDescription.textContent = description;
+                
+                placeholder.style.display = 'none';
+                resultContent.classList.add('show');
+            }
+        });
+    </script>
+</body>
+</html>
